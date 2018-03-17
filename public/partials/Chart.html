@@ -1,0 +1,100 @@
+<!-- Page Content -->
+<div class="container">
+    
+        <div class="row">
+            <div id="blankHeight"style="height:200px;"></div>
+            <div id="columnchart_values" style="padding-left:15%" ><img src="\img\loading.gif" id="loader_image"  /></div>
+
+        </div>
+   
+    </div><!-- /.container -->
+
+<script>
+
+    (function () {
+        var Edata = ""
+        $.ajax({
+            url: 'https://pacserver.herokuapp.com/getVoterInformation',
+            success: function (data) {
+                console.log("data", data)
+                Edata = data;
+            }
+        })
+
+        var colorarr = ['red', 'blue', 'green', '#FF69B4', '#9ACD32', '#9932CC']
+
+		var dbRef = new Firebase("https://ustdb.firebaseio.com/employeeList");
+		 var data = null;
+		 var chart = null;
+		 var isChartInit = false;
+          
+            setTimeout(function () {
+                $("#loader_image").hide();
+                $("#largeImg").show();
+                $("#blankHeight").css('height','80px');
+                google.charts.load("current", { packages: ['corechart'] });
+                google.charts.setOnLoadCallback(drawChart);
+            }, 10000
+   );
+            function drawChart() {
+                data = new google.visualization.DataTable();
+                chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values"));
+                data.addColumn('string', 'Name'); // Implicit domain label col.
+                data.addColumn('number', 'Vote %'); // Implicit series 1 data col.
+                data.addColumn({ type: 'string', role: 'style' })
+
+                console.log("dbRef", dbRef)
+                dbRef.on("value", function (snapshot) {                   
+                    var employeedata = [];
+                    //var temp = JSON.stringify(snapshot.val());
+                    //console.log("temp", temp)
+                    var temp1 = Edata.voterInfo;
+                    console.log(temp1);
+                    var emptotalVote = 0;
+                    if (isChartInit == false)
+                    {
+                       
+                        isChartInit = true;
+                        for (var i = 0; i < temp1.length; i++) {
+                            emptotalVote = emptotalVote + temp1[i].voteCounter;
+                            temp1[i].empColor = colorarr[i];
+                        }
+                        console.log(emptotalVote);
+                        for (var i = 0; i < temp1.length; i++) {
+                            console.log(temp1[i].totalVote);
+                            employeedata.push([temp1[i].fullname, (temp1[i].voteCounter / emptotalVote) * 100, temp1[i].empColor])
+                        }
+                        data.addRows(employeedata);
+                        var view = new google.visualization.DataView(data);
+                        var options = {
+                            title: "USsociate of Year 2017",
+                            width: 1000,
+                            height: 600,
+                            bar: { groupWidth: "95%" },
+                            legend: { position: "none" },
+                            animation: {
+                                duration: 4000,
+                                easing: 'in',
+                                startup: true
+                            },
+                            vAxis: {
+                                viewWindowMode: 'explicit',
+                                viewWindow: {
+                                    //max: 100,
+                                    //min: 0
+                                }
+                                , format: '#\'%\''
+                            }
+                        };
+                        
+                        chart.draw(view, options);                       
+                    }
+                }, function (errorObject) {
+                    console.log("The read failed: " + errorObject.code);
+                });
+               
+                 
+            }
+           
+        })();
+</script>

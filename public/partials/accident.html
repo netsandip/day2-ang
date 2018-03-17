@@ -1,0 +1,42 @@
+
+
+<div class="section">
+    <div class="container">
+        <div class="row">
+            <br /><br /><br />
+            <div class="col-lg-4 col-md-6" ng-controller="AccidentCtrl">
+                    <h3>
+                            Accident count: 
+                            {{
+                                AccidentCount
+                            }}
+                        </h3>
+            </div>
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container -->
+</div>
+<!-- /.section -->
+<div class="section">
+    <div class="container">
+        <div class="row">
+                <div class="col-lg-12" >
+                        <form>                            
+                            <button type="submit" class="btn-lg-2 btn-success right " ng-click="redirect()">Live Map</button>
+                        </form>
+                    </div>
+        </div>
+        <div class="row"> 
+            <div class="col-lg-12">
+                <div ng-controller="AccidentCtrl">
+                    <div id="grid1" ui-grid="gridOptions" class="grid"></div>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+    </div>
+    
+    <!-- /.container -->
+</div>
+<!-- /.section -->
